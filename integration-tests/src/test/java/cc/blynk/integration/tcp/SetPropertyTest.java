@@ -477,4 +477,20 @@ public class SetPropertyTest extends SingleServerInstancePerTest {
         assertEquals(600084223, widget.color);
     }
 
+    @Test
+    public void testWidgetPropertySetOpacity() throws Exception {
+
+        clientPair.hardwareClient.setProperty(4, "opacity", "0.5");
+        clientPair.appClient.verifyResult(ok(1));
+        verify(clientPair.appClient.responseMock, timeout(500)).channelRead(any(), eq(setProperty(1, "1-0 4 opacity 0.5")));
+
+        clientPair.appClient.reset();
+        clientPair.appClient.send("loadProfileGzipped");
+
+        Profile profile = clientPair.appClient.parseProfile(1);
+        Widget widget = profile.dashBoards[0].findWidgetByPin(0, (short) 4, PinType.VIRTUAL);
+        assertEquals(((Image) widget).opacity,0.5,0.001);
+
+    }
+
 }
