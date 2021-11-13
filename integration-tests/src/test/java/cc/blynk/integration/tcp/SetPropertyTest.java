@@ -19,21 +19,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static cc.blynk.integration.TestUtil.createTag;
-import static cc.blynk.integration.TestUtil.illegalCommand;
-import static cc.blynk.integration.TestUtil.ok;
-import static cc.blynk.integration.TestUtil.setProperty;
+import static cc.blynk.integration.TestUtil.*;
 import static cc.blynk.server.core.protocol.enums.Response.ILLEGAL_COMMAND_BODY;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.after;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * The Blynk Project.
@@ -69,7 +58,7 @@ public class SetPropertyTest extends SingleServerInstancePerTest {
     @Test
     //https://github.com/blynkkk/blynk-server/issues/756
     public void testSetWidgetPropertyIsNotRestoredForTagWidgetAfterOverriding() throws Exception {
-        Tag tag0 = new Tag(100_000, "Tag1", new int[] {0});
+        Tag tag0 = new Tag(100_000, "Tag1", new int[]{0});
 
         clientPair.appClient.createTag(1, tag0);
         String createdTag = clientPair.appClient.getBody();
@@ -173,7 +162,7 @@ public class SetPropertyTest extends SingleServerInstancePerTest {
         assertTrue(widget instanceof Menu);
         Menu menuWidget = (Menu) widget;
 
-        assertArrayEquals(new String[] {"label1", "label2", "label3"}, menuWidget.labels);
+        assertArrayEquals(new String[]{"label1", "label2", "label3"}, menuWidget.labels);
     }
 
     @Test
@@ -338,7 +327,7 @@ public class SetPropertyTest extends SingleServerInstancePerTest {
         assertTrue(widget instanceof Image);
         Image imageWidget = (Image) widget;
 
-        assertArrayEquals(new String[] {"http://123.com"}, imageWidget.urls);
+        assertArrayEquals(new String[]{"http://123.com"}, imageWidget.urls);
 
         clientPair.hardwareClient.setProperty(17, "urls", "http://123.com", "http://124.com");
         clientPair.hardwareClient.verifyResult(ok(2));
@@ -353,7 +342,7 @@ public class SetPropertyTest extends SingleServerInstancePerTest {
         assertTrue(widget instanceof Image);
         imageWidget = (Image) widget;
 
-        assertArrayEquals(new String[] {"http://123.com", "http://124.com"}, imageWidget.urls);
+        assertArrayEquals(new String[]{"http://123.com", "http://124.com"}, imageWidget.urls);
     }
 
     @Test
@@ -374,7 +363,7 @@ public class SetPropertyTest extends SingleServerInstancePerTest {
         assertTrue(widget instanceof Image);
         Image imageWidget = (Image) widget;
 
-        assertArrayEquals(new String[] {"http://123.com"}, imageWidget.urls);
+        assertArrayEquals(new String[]{"http://123.com"}, imageWidget.urls);
 
         clientPair.hardwareClient.setProperty(17, "url", "2", "http://123.com");
         clientPair.hardwareClient.verifyResult(ok(2));
@@ -389,7 +378,7 @@ public class SetPropertyTest extends SingleServerInstancePerTest {
         assertTrue(widget instanceof Image);
         imageWidget = (Image) widget;
 
-        assertArrayEquals(new String[] {"http://123.com"}, imageWidget.urls);
+        assertArrayEquals(new String[]{"http://123.com"}, imageWidget.urls);
     }
 
     @Test
@@ -477,4 +466,23 @@ public class SetPropertyTest extends SingleServerInstancePerTest {
         assertEquals(600084223, widget.color);
     }
 
+    @Test
+    public void testWidgetPropertyOpacity() throws Exception {
+        clientPair.appClient.createWidget(1, "{\"id\":102, \"width\":1, \"height\":1, \"x\":5, \"y\":0, \"tabId\":0, \"label\":\"Some Text\", \"type\":\"IMAGE\", \"urls\":[\"https://blynk.cc/123.jpg\"], \"pinType\":\"VIRTUAL\", \"pin\":17}");
+        clientPair.appClient.verifyResult(ok(1));
+
+        clientPair.hardwareClient.setProperty(17, "opacity", "50");
+        clientPair.hardwareClient.verifyResult(ok(1));
+
+        clientPair.appClient.reset();
+        clientPair.appClient.send("loadProfileGzipped");
+
+        Profile profile = clientPair.appClient.parseProfile(1);
+        Widget widget = profile.dashBoards[0].findWidgetByPin(0, (short) 17, PinType.VIRTUAL);
+        assertNotNull(widget);
+        assertTrue(widget instanceof Image);
+        Image image = (Image) widget;
+
+        assertEquals(50, image.opacity);
+    }
 }
