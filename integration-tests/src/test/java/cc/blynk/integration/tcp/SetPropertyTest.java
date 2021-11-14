@@ -4,6 +4,7 @@ import cc.blynk.integration.SingleServerInstancePerTest;
 import cc.blynk.server.core.model.Profile;
 import cc.blynk.server.core.model.device.Tag;
 import cc.blynk.server.core.model.enums.PinType;
+import cc.blynk.server.core.model.enums.WidgetProperty;
 import cc.blynk.server.core.model.serialization.JsonParser;
 import cc.blynk.server.core.model.widgets.OnePinWidget;
 import cc.blynk.server.core.model.widgets.Widget;
@@ -24,10 +25,7 @@ import static cc.blynk.integration.TestUtil.illegalCommand;
 import static cc.blynk.integration.TestUtil.ok;
 import static cc.blynk.integration.TestUtil.setProperty;
 import static cc.blynk.server.core.protocol.enums.Response.ILLEGAL_COMMAND_BODY;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
@@ -475,6 +473,18 @@ public class SetPropertyTest extends SingleServerInstancePerTest {
 
         Widget widget = profile.dashBoards[0].getWidgetById(4);
         assertEquals(600084223, widget.color);
+    }
+
+    @Test
+    public void testGetPropertyOpacityInWidgetPropertyWhenSpelledCorrectly(){
+        WidgetProperty opacity = WidgetProperty.getProperty("opacity");
+        assertEquals(opacity, WidgetProperty.OPACITY);
+    }
+
+    @Test
+    public void testGetPropertyOpacityInWidgetPropertyWhenSpelledIncorrectly(){
+        WidgetProperty opacity = WidgetProperty.getProperty("opacy");
+        assertNotEquals(opacity, WidgetProperty.OPACITY);
     }
 
 }
