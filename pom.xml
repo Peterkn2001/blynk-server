@@ -159,7 +159,7 @@
         <!-- dependencies -->
         <netty.version>4.1.63.Final</netty.version>
         <netty.boring.ssl.version>2.0.38.Final</netty.boring.ssl.version>
-        <log4j2.version>2.14.1</log4j2.version>
+        <log4j2.version>2.15.0</log4j2.version>
         <jackson-databind.version>2.12.2</jackson-databind.version>
         <disruptor.version>3.4.2</disruptor.version>
         <async-http-client.version>2.12.3</async-http-client.version>
